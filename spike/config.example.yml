@@ -1,0 +1,27 @@
+# Phase 0 spike — minimal LiteLLM config to point GitHub Copilot at.
+#
+#   pip install "litellm[proxy]"
+#   litellm --config spike/config.example.yml   # listens on :4000
+#
+# model_name = what Copilot sends. Adjust litellm_params to your providers.
+# Run with a master key if you prefer:  litellm --config ... --master_key dev
+#
+model_list:
+  # Chat (CAPI /chat/completions, /responses, /v1/messages)
+  - model_name: gpt-4o
+    litellm_params:
+      model: openai/gpt-4o
+      # api_key: os.environ/OPENAI_API_KEY
+  - model_name: claude-3-7-sonnet-latest
+    litellm_params:
+      model: anthropic/claude-3-7-sonnet-latest
+      # api_key: os.environ/ANTHROPIC_API_KEY
+
+  # Code completions (proxy /v1/engines/gpt-4o-copilot/completions)
+  # NOTE: plain LiteLLM does not serve that path — see docs/spike.md step 3.
+  - model_name: gpt-4o-copilot
+    litellm_params:
+      model: openai/gpt-4o-mini
+
+litellm_settings:
+  drop_params: true

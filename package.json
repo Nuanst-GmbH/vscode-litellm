@@ -1,0 +1,233 @@
+{
+  "name": "vscode-litellm",
+  "displayName": "LiteLLM Proxy for GitHub Copilot",
+  "description": "Route GitHub Copilot chat, completions, inline suggestions, and agents through your LiteLLM proxy.",
+  "version": "0.2.0",
+  "publisher": "nuanst-one",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nuanst-one/vscode-litellm.git"
+  },
+  "homepage": "https://github.com/nuanst-one/vscode-litellm#readme",
+  "bugs": {
+    "url": "https://github.com/nuanst-one/vscode-litellm/issues"
+  },
+  "icon": "icon.png",
+  "galleryBanner": {
+    "color": "#47704c",
+    "theme": "dark"
+  },
+  "pricing": "Free",
+  "qna": "https://github.com/nuanst-one/vscode-litellm/issues",
+  "keywords": [
+    "litellm",
+    "github copilot",
+    "copilot",
+    "proxy",
+    "completions",
+    "inline suggestions",
+    "ollama",
+    "openai",
+    "local llm",
+    "self-hosted",
+    "openrouter",
+    "agents",
+    "gateway",
+    "azure openai",
+    "vllm"
+  ],
+  "engines": {
+    "vscode": "^1.110.0"
+  },
+  "categories": [
+    "Other",
+    "Machine Learning"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "vscode-litellm.configure",
+        "title": "LiteLLM Proxy: Configure Model Map"
+      },
+      {
+        "command": "vscode-litellm.testConnection",
+        "title": "LiteLLM Proxy: Test Connection"
+      },
+      {
+        "command": "vscode-litellm.exportConfig",
+        "title": "LiteLLM Proxy: Export LiteLLM config.yml"
+      },
+      {
+        "command": "vscode-litellm.toggle",
+        "title": "LiteLLM Proxy: Toggle Routing"
+      },
+      {
+        "command": "vscode-litellm.doctor",
+        "title": "LiteLLM Proxy: Troubleshoot (doctor)",
+        "icon": "$(search)"
+      },
+      {
+        "command": "vscode-litellm.reload",
+        "title": "LiteLLM Proxy: Reload (restart this window)",
+        "icon": "$(reload)"
+      },
+      {
+        "command": "vscode-litellm.setLogLevel",
+        "title": "LiteLLM Proxy: Set Log Level",
+        "icon": "$(settings-gear)"
+      },
+      {
+        "command": "vscode-litellm.statusBarMenu",
+        "title": "LiteLLM Proxy: Menu"
+      },
+      {
+        "command": "vscode-litellm.recentRequests",
+        "title": "LiteLLM Proxy: Recent Requests"
+      },
+      {
+        "command": "vscode-litellm.storeApiKey",
+        "title": "LiteLLM Proxy: Store API Key Securely"
+      },
+      {
+        "command": "vscode-litellm.clearApiKey",
+        "title": "LiteLLM Proxy: Clear Stored API Key"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "vscode-litellm.setLogLevel",
+          "when": "view == 'workbench.panel.output'",
+          "group": "navigation",
+          "icon": "$(settings-gear)"
+        }
+      ],
+      "commandPalette": [
+        { "command": "vscode-litellm.statusBarMenu", "when": "false" }
+      ]
+    },
+    "configuration": {
+      "title": "LiteLLM Proxy for GitHub Copilot",
+      "properties": {
+        "vscode-litellm.enabled": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Master switch. When enabled, Copilot's chat/completions endpoints are redirected to `#vscode-litellm.proxyBaseUrl#`. Disabling restores the real GitHub endpoints."
+        },
+        "vscode-litellm.proxyBaseUrl": {
+          "type": "string",
+          "default": "http://localhost:4000",
+          "markdownDescription": "Base URL of the LiteLLM proxy (no trailing slash), e.g. `http://localhost:4000`."
+        },
+        "vscode-litellm.defaultDeployment": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "Optional. Single LiteLLM model name used in the exported config for any Copilot model that has no explicit entry in `#vscode-litellm.modelMap#` (e.g. `openai/gpt-4o`). Leave empty to export identity mappings."
+        },
+        "vscode-litellm.modelMap": {
+          "type": "object",
+          "default": {
+            "gpt-4o": "gpt-4o",
+            "gpt-4o-copilot": "gpt-4o",
+            "claude-3-7-sonnet-latest": "claude-3-7-sonnet-latest"
+          },
+          "markdownDescription": "Maps Copilot model names (what the picker sends) to LiteLLM model names. Edit with the *LiteLLM Proxy: Configure Model Map* command. Names observed during the spike should be added here."
+        },
+        "vscode-litellm.deployment.apiBase": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "Optional. Written as `api_base` for every deployment in the exported config.yml."
+        },
+        "vscode-litellm.deployment.apiKey": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "Optional. Written as `api_key` for every deployment in the exported config.yml. Stored in plain text \u2014 prefer an env var name like `OS.environ['OPENAI_API_KEY']` for sensitive setups."
+        },
+        "vscode-litellm.forwarder.enabled": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "Run a local auth-rewriting forwarder (`127.0.0.1:forwarder.port`) in front of the proxy. Needed when the proxy enforces an API key \u2014 Copilot sends its own ephemeral Copilot JWT, which key-checked proxies reject. When enabled, Copilot's override keys point at the forwarder, not directly at the proxy."
+        },
+        "vscode-litellm.forwarder.port": {
+          "type": "integer",
+          "default": 4141,
+          "markdownDescription": "Local port for the forwarder."
+        },
+        "vscode-litellm.forwarder.apiKey": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "API key sent to the proxy as `Authorization: Bearer <key>`. Falls back to `#vscode-litellm.deployment.apiKey#` when empty. Stored in plain text — prefer **LiteLLM Proxy: Store API Key Securely** (SecretStorage), which takes priority while set."
+        },
+        "vscode-litellm.forwarder.requestTimeoutMs": {
+          "type": "integer",
+          "default": 30000,
+          "markdownDescription": "Milliseconds to wait for the upstream proxy's first response byte before the forwarder gives up (then retries once, or answers 504). `0` disables the timeout. Long-running SSE streams are NOT cut off — only the wait for the first byte is bounded."
+        },
+        "vscode-litellm.forwarder.fallbackModel": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "Model ID used when the requested model is unavailable. When the upstream refuses a request with a model-not-found error (404 / 400 “model does not exist”), the forwarder retries it once with this model. Requires `#vscode-litellm.forwarder.enabled#`."
+        },
+        "vscode-litellm.surfaces.chat": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Route chat (CAPI base: chat, responses, messages, embeddings) through the proxy."
+        },
+        "vscode-litellm.surfaces.agents": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Route agent/skill surfaces (CAPI base: /agents, /skills, /search) through the proxy."
+        },
+        "vscode-litellm.surfaces.completions": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Route code completions (proxy base) through the proxy."
+        },
+        "vscode-litellm.statusPollIntervalMs": {
+          "type": "integer",
+          "default": 30000,
+          "markdownDescription": "How often the status bar pings the endpoint (health + model list). Values below 5000 are clamped to 5000."
+        },
+        "vscode-litellm.logLevel": {
+          "type": "string",
+          "enum": [
+            "trace",
+            "debug",
+            "info",
+            "warn",
+            "error"
+          ],
+          "default": "trace",
+          "markdownDescription": "Minimum level written to the `vscode-litellm` output channel (View → Output → \"vscode-litellm\"). `trace` (default) logs every forwarded request/response, including the 30s status poll; `info` is quieter. `fatal` (unhandled exceptions) is always logged."
+        },
+        "vscode-litellm.surfaces.nes": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Route inline hints / Next Edit Suggestions (proxy base) through the proxy."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "check": "tsc --noEmit",
+    "compile": "npm run check && node esbuild.mjs",
+    "watch": "node esbuild.mjs --watch",
+    "test": "node test/run.mjs",
+    "icon": "node scripts/make-icon.mjs",
+    "package": "vsce package",
+    "publish": "vsce publish"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/vscode": "^1.110.0",
+    "@vscode/vsce": "^3.2.0",
+    "esbuild": "^0.25.0",
+    "typescript": "^5.6.0"
+  }
+}
