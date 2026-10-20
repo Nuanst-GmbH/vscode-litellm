@@ -1,10 +1,17 @@
-// icon.png (128x128) for the Marketplace listing.
+// Procedural 128×128 fallback for the Marketplace icon.
+// The checked-in icon.png is the designed Nuanst mark (source artwork:
+// media/icon.png). This script overwrites it only with --force.
 // Pure Node: draw a router glyph, then encode a PNG. No canvas dependency.
-// Usage: node scripts/make-icon.mjs
+// Usage: node scripts/make-icon.mjs --force
 import { deflateSync } from 'node:zlib';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { fileURLToPath } from 'node:url';
+
+if (!process.argv.includes('--force')) {
+  console.log('icon.png is the designed Nuanst icon (media/icon.png). Pass --force to replace it with the procedural glyph.');
+  process.exit(0);
+}
 
 const S = 128;
 const px = Buffer.alloc(S * S * 4);
@@ -53,10 +60,10 @@ function paint(pred, [r, g, b, a = 255]) {
   }
 }
 
-const TILE = [14, 116, 144]; // cyan-700, readable on the slate gallery banner
+const TILE = [71, 112, 76]; // #47704c, Nuanst green
 const LINE = [255, 255, 255];
 const NODE = [255, 255, 255];
-const HUB = [251, 191, 36]; // amber-400
+const HUB = [240, 108, 53]; // #f06c35, Nuanst orange
 
 paint((x, y) => insideRounded(x, y, { x: 0, y: 0, w: S, h: S, rad: 28 }), TILE);
 

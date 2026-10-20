@@ -94,7 +94,7 @@ function checkVersion(context: vscode.ExtensionContext): Finding[] {
       severity: 'error',
       label: `this window is running an old build — v${running} in memory, but v${latest} is installed`,
       detail: 'You installed a newer vsix but did not reload, so the running code is stale (this is the usual cause of "fixes not taking effect").',
-      fix: 'Run "LiteLLM Router: Reload (restart this window)" or Developer: Reload Window.',
+      fix: 'Run "LiteLLM Proxy: Reload (restart this window)" or Developer: Reload Window.',
     });
   } else if (cmpVer(latest, running) < 0) {
     out.push({ severity: 'ok', label: `running build v${running} is newer than the newest installed (v${latest}) — dev/unreleased build` });
@@ -174,7 +174,7 @@ function checkSettings(a: {
   const out: Finding[] = [];
   out.push(a.enabled
     ? { severity: 'ok', label: 'routing enabled' }
-    : { severity: 'error', label: 'routing is DISABLED', fix: 'Run "LiteLLM Router: Toggle Routing".' });
+    : { severity: 'error', label: 'routing is DISABLED', fix: 'Run "LiteLLM Proxy: Toggle Routing".' });
 
   out.push(a.proxyBaseUrl
     ? { severity: 'ok', label: `proxy base set: ${a.proxyBaseUrl}` }
@@ -193,7 +193,7 @@ function checkSettings(a: {
   } else {
     out.push(a.apiKey
       ? { severity: 'ok', label: 'forwarder API key set (plain text in settings.json — consider "Store API key securely")' }
-      : { severity: 'warn', label: 'no API key set', detail: 'fine only if the proxy does not enforce an API key.', fix: 'Set vscode-litellm.forwarder.apiKey (or deployment.apiKey), or run "LiteLLM Router: Store API key securely".' });
+      : { severity: 'warn', label: 'no API key set', detail: 'fine only if the proxy does not enforce an API key.', fix: 'Set vscode-litellm.forwarder.apiKey (or deployment.apiKey), or run "LiteLLM Proxy: Store API key securely".' });
   }
 
   if (typeof a.requestTimeoutMs !== 'number' || !Number.isFinite(a.requestTimeoutMs) || a.requestTimeoutMs < 0) {
@@ -210,7 +210,7 @@ function checkSettings(a: {
 
   out.push(Object.keys(a.modelMap).length > 0
     ? { severity: 'ok', label: `model map has ${Object.keys(a.modelMap).length} entr${Object.keys(a.modelMap).length === 1 ? 'y' : 'ies'}: ${Object.entries(a.modelMap).map(([k, v]) => `${k}→${v || '(default)'}`).join(', ')}` }
-    : { severity: 'warn', label: 'model map is empty', detail: 'Copilot model names will not be advertised to the client.', fix: 'Run "LiteLLM Router: Configure Model Map".' });
+    : { severity: 'warn', label: 'model map is empty', detail: 'Copilot model names will not be advertised to the client.', fix: 'Run "LiteLLM Proxy: Configure Model Map".' });
   return out;
 }
 
@@ -238,7 +238,7 @@ function checkOverrides(a: {
       severity: 'warn',
       label: `${correct}/${OVERRIDES.length} override keys correct — Copilot may not be routed`,
       detail: wrong.join('\n'),
-      fix: 'Run "LiteLLM Router: Toggle Routing", then reload the window.',
+      fix: 'Run "LiteLLM Proxy: Toggle Routing", then reload the window.',
     });
   }
   return out;
@@ -269,7 +269,7 @@ async function checkPort(fwdEnabled: boolean, port: number, running: boolean): P
       severity: 'error',
       label: `forwarder should be listening on 127.0.0.1:${port} but is not`,
       detail: 'nothing is bound to the port and this window reports no forwarder — it likely failed to start.',
-      fix: 'Run "LiteLLM Router: Reload (restart this window)" and check the vscode-litellm output for a start error.',
+      fix: 'Run "LiteLLM Proxy: Reload (restart this window)" and check the vscode-litellm output for a start error.',
     });
   }
   return out;
@@ -315,7 +315,7 @@ async function checkChatSurface(base: string, fallbackModel: string, modelMap: R
       severity: 'error',
       label: `chat path broken: POST /chat/completions via ${base} did not answer`,
       detail: String(err instanceof Error ? err.message : err),
-      fix: 'Check the forwarder and the remote proxy (LiteLLM Router: Test connection).',
+      fix: 'Check the forwarder and the remote proxy (LiteLLM Proxy: Test connection).',
     }];
   }
 }
@@ -358,7 +358,7 @@ async function render(findings: Finding[], context: vscode.ExtensionContext): Pr
   const logLevel = vscode.workspace.getConfiguration('vscode-litellm').get<string>('logLevel', 'undefined');
   const lines: string[] = [
     '',
-    `LiteLLM Router — doctor    (running build v${__LITELLM_EXT_VERSION__}, VS Code ${vscode.version})`,
+    `LiteLLM Proxy — doctor    (running build v${__LITELLM_EXT_VERSION__}, VS Code ${vscode.version})`,
     `    log level: ${logLevel}  (vscode-litellm.logLevel — only messages at/above this appear in the "vscode-litellm" output channel)`,
     '─'.repeat(64),
   ];
@@ -385,11 +385,11 @@ function summarize(findings: Finding[]): void {
   const errors = findings.filter((f) => f.severity === 'error');
   const warns = findings.filter((f) => f.severity === 'warn');
   if (errors.length > 0) {
-    void vscode.window.showErrorMessage(`LiteLLM Router doctor: ${errors.length} problem(s) — ${errors[0].label}`);
+    void vscode.window.showErrorMessage(`LiteLLM Proxy doctor: ${errors.length} problem(s) — ${errors[0].label}`);
   } else if (warns.length > 0) {
-    void vscode.window.showWarningMessage(`LiteLLM Router doctor: ${warns.length} warning(s) — ${warns[0].label}`);
+    void vscode.window.showWarningMessage(`LiteLLM Proxy doctor: ${warns.length} warning(s) — ${warns[0].label}`);
   } else {
-    void vscode.window.showInformationMessage('LiteLLM Router doctor: all checks passed ✓');
+    void vscode.window.showInformationMessage('LiteLLM Proxy doctor: all checks passed ✓');
   }
 }
 

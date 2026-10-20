@@ -91,13 +91,13 @@ function validateConfig(): void {
   try { parsed = new URL(base); } catch { /* reported below */ }
   if (!parsed || !['http:', 'https:'].includes(parsed.protocol) || !parsed.hostname) {
     extLog.warn('invalid proxyBaseUrl', base);
-    warnOnce(`LiteLLM Router: vscode-litellm.proxyBaseUrl is not a valid http(s) URL ("${base}") — routing will not work until it is fixed`);
+    warnOnce(`LiteLLM Proxy: vscode-litellm.proxyBaseUrl is not a valid http(s) URL ("${base}") — routing will not work until it is fixed`);
     return;
   }
   const port = cfg.get<number>('forwarder.port', 4141);
   if (!Number.isInteger(port) || port < 1 || port > 65535) {
     extLog.warn('invalid forwarder.port', String(port));
-    warnOnce(`LiteLLM Router: vscode-litellm.forwarder.port must be an integer 1–65535 (got ${String(port)})`);
+    warnOnce(`LiteLLM Proxy: vscode-litellm.forwarder.port must be an integer 1–65535 (got ${String(port)})`);
   }
 }
 
@@ -170,7 +170,7 @@ export function activate(context: vscode.ExtensionContext): void {
           extLog.info('forwarder started on ' + f.baseUrl);
         } catch (err) {
           extLog.error('forwarder failed to start', err);
-          warnOnce(`LiteLLM Router forwarder: ${String(err)}`);
+          warnOnce(`LiteLLM Proxy forwarder: ${String(err)}`);
         }
       }
     } else {
@@ -203,14 +203,14 @@ export function activate(context: vscode.ExtensionContext): void {
       }
       if (result.method === 'settings-file' && result.changed) {
         const choice = await vscode.window.showInformationMessage(
-          'LiteLLM Router: Copilot endpoint overrides written to your user settings.json. Reload the window to activate them.',
+          'LiteLLM Proxy: Copilot endpoint overrides written to your user settings.json. Reload the window to activate them.',
           'Reload Window',
         );
         if (choice === 'Reload Window') {
           void vscode.commands.executeCommand('workbench.action.reloadWindow');
         }
       } else if (result.details && result.method === 'skipped') {
-        warnOnce(`LiteLLM Router: ${result.details}`);
+        warnOnce(`LiteLLM Proxy: ${result.details}`);
       }
       // poll interval is a setting — re-arm the timer when it changes
       statusBar.schedule();
@@ -250,19 +250,19 @@ export function activate(context: vscode.ExtensionContext): void {
         const result = await applyOverrides(toOverrideState(state));
         if (result.method === 'settings-file' && result.changed) {
           const choice = await vscode.window.showInformationMessage(
-            `LiteLLM Router ${next ? 'enabled' : 'disabled'} — overrides ${next ? 'written' : 'cleared'}. Reload the window to apply.`,
+            `LiteLLM Proxy ${next ? 'enabled' : 'disabled'} — overrides ${next ? 'written' : 'cleared'}. Reload the window to apply.`,
             'Reload Window',
           );
           if (choice === 'Reload Window') {
             void vscode.commands.executeCommand('workbench.action.reloadWindow');
           }
         } else if (result.details && result.method === 'skipped') {
-          warnOnce(`LiteLLM Router: ${result.details}`);
+          warnOnce(`LiteLLM Proxy: ${result.details}`);
         }
         void statusBar.refresh();
       } catch (err) {
         extLog.fatal('toggle failed', err);
-        void vscode.window.showErrorMessage(`LiteLLM Router toggle failed: ${String(err)}`);
+        void vscode.window.showErrorMessage(`LiteLLM Proxy toggle failed: ${String(err)}`);
       }
     }),
 
@@ -285,9 +285,9 @@ export function activate(context: vscode.ExtensionContext): void {
         extLog.error('test connection', msg);
       }
       if (status.reachable) {
-        void vscode.window.showInformationMessage(`LiteLLM Router: ${msg}`);
+        void vscode.window.showInformationMessage(`LiteLLM Proxy: ${msg}`);
       } else {
-        void vscode.window.showErrorMessage(`LiteLLM Router: ${msg}`);
+        void vscode.window.showErrorMessage(`LiteLLM Proxy: ${msg}`);
       }
       void statusBar.refresh();
     }),
@@ -319,7 +319,7 @@ export function activate(context: vscode.ExtensionContext): void {
         });
       } catch (err) {
         extLog.fatal('doctor failed', err);
-        void vscode.window.showErrorMessage(`LiteLLM Router doctor failed: ${String(err)}`);
+        void vscode.window.showErrorMessage(`LiteLLM Proxy doctor failed: ${String(err)}`);
       }
     }),
 
@@ -346,7 +346,7 @@ export function activate(context: vscode.ExtensionContext): void {
       const picked = await vscode.window.showQuickPick(
         levels.map((l) => ({ label: l.id, description: l.desc, detail: l.id === current ? 'current' : undefined })),
         {
-          title: 'LiteLLM Router — log level for the "vscode-litellm" output channel',
+          title: 'LiteLLM Proxy — log level for the "vscode-litellm" output channel',
           placeHolder: `current: ${current} (applies immediately, new lines only)`,
         },
       );
@@ -355,14 +355,14 @@ export function activate(context: vscode.ExtensionContext): void {
       if (!id) return;
       await cfg.update('logLevel', id, vscode.ConfigurationTarget.Global);
       extLog.info('log level set to ' + id);
-      void vscode.window.showInformationMessage(`LiteLLM Router: log level → ${id}`);
+      void vscode.window.showInformationMessage(`LiteLLM Proxy: log level → ${id}`);
     }),
 
     // API key in SecretStorage (never in settings.json). Takes priority over
     // vscode-litellm.forwarder.apiKey / deployment.apiKey while non-empty.
     vscode.commands.registerCommand('vscode-litellm.storeApiKey', async () => {
       const key = await vscode.window.showInputBox({
-        title: 'LiteLLM Router — API key for the forwarder (SecretStorage)',
+        title: 'LiteLLM Proxy — API key for the forwarder (SecretStorage)',
         password: true,
         prompt: 'Sent to the proxy as Authorization: Bearer <key>. Takes priority over the settings.json key while non-empty.',
         placeHolder: 'e.g. sk-...',
@@ -371,11 +371,11 @@ export function activate(context: vscode.ExtensionContext): void {
       if (key === '') {
         await context.secrets.delete(SECRET_KEY);
         extLog.info('stored API key cleared (empty input)');
-        void vscode.window.showInformationMessage('LiteLLM Router: stored API key cleared');
+        void vscode.window.showInformationMessage('LiteLLM Proxy: stored API key cleared');
       } else {
         await context.secrets.store(SECRET_KEY, key);
         extLog.info('API key stored in SecretStorage');
-        void vscode.window.showInformationMessage('LiteLLM Router: API key stored securely');
+        void vscode.window.showInformationMessage('LiteLLM Proxy: API key stored securely');
       }
       applyDebounced();
     }),
@@ -383,7 +383,7 @@ export function activate(context: vscode.ExtensionContext): void {
     vscode.commands.registerCommand('vscode-litellm.clearApiKey', async () => {
       await context.secrets.delete(SECRET_KEY);
       extLog.info('stored API key cleared');
-      void vscode.window.showInformationMessage('LiteLLM Router: stored API key cleared');
+      void vscode.window.showInformationMessage('LiteLLM Proxy: stored API key cleared');
       applyDebounced();
     }),
 
@@ -393,7 +393,7 @@ export function activate(context: vscode.ExtensionContext): void {
       const records = forwarder?.recentRequests() ?? [];
       if (!forwarder || records.length === 0) {
         void vscode.window.showInformationMessage(
-          'LiteLLM Router: no recorded requests (forwarder not running, or nothing has been forwarded since the last restart)',
+          'LiteLLM Proxy: no recorded requests (forwarder not running, or nothing has been forwarded since the last restart)',
         );
         return;
       }
@@ -407,19 +407,19 @@ export function activate(context: vscode.ExtensionContext): void {
         })),
       ];
       const picked = await vscode.window.showQuickPick(items, {
-        title: `LiteLLM Router — recent requests (${records.length})`,
+        title: `LiteLLM Proxy — recent requests (${records.length})`,
         placeHolder: 'newest first — pick one for details',
       });
       if (!picked) return;
       if (picked.clear) {
         forwarder?.clearRecentRequests();
-        void vscode.window.showInformationMessage('LiteLLM Router: request list cleared');
+        void vscode.window.showInformationMessage('LiteLLM Proxy: request list cleared');
         return;
       }
       if (picked.rec) {
         const r = picked.rec;
         const lines = [
-          `LiteLLM Router — request detail`,
+          `LiteLLM Proxy — request detail`,
           '',
           `time            ${r.time}`,
           `request         ${r.method} ${r.path}`,
@@ -456,7 +456,7 @@ export function activate(context: vscode.ExtensionContext): void {
         { label: '$(key) Configure model map', description: 'Copilot model name → deployment', cmd: 'vscode-litellm.configure' },
         { label: '$(file-export) Export LiteLLM config.yml', description: 'generate a config for the proxy', cmd: 'vscode-litellm.exportConfig' },
       ];
-      const picked = await vscode.window.showQuickPick(items, { title: 'LiteLLM Router', placeHolder: 'Pick an action' });
+      const picked = await vscode.window.showQuickPick(items, { title: 'LiteLLM Proxy', placeHolder: 'Pick an action' });
       if (picked) {
         extLog.debug('status-bar menu → ' + picked.cmd);
         await vscode.commands.executeCommand(picked.cmd);

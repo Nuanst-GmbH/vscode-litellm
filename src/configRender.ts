@@ -34,7 +34,7 @@ export function renderLiteLLMConfig(opts: ExportOptions): string {
     if (opts.apiKey) lines.push(`      api_key: ${quoteYaml(opts.apiKey)}`);
   }
   if (entries.length === 0) {
-    lines.push('  # no modelMap entries — add some via "LiteLLM Router: Configure Model Map"');
+    lines.push('  # no modelMap entries — add some via "LiteLLM Proxy: Configure Model Map"');
   }
   lines.push('');
   lines.push('# Known Copilot-only paths that plain LiteLLM 404s on (see docs/spike.md):');

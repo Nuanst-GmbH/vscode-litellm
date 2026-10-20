@@ -47,7 +47,7 @@ export async function configureModelMap(): Promise<void> {
     }
 
     const picked = await vscode.window.showQuickPick(items, {
-      title: 'LiteLLM Router — model map (Copilot name → LiteLLM deployment)',
+      title: 'LiteLLM Proxy — model map (Copilot name → LiteLLM deployment)',
       placeHolder: 'Pick an entry to edit, or use the top actions',
     });
     if (!picked) return;

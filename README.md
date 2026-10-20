@@ -1,13 +1,15 @@
-# LiteLLM Router for GitHub Copilot
+# LiteLLM Proxy for GitHub Copilot
 
-Route GitHub Copilot — chat, code completions, inline hints/NES, agents, and
+![LiteLLM Proxy for GitHub Copilot, a Nuanst product](media/banner.png)
+
+A [Nuanst](https://www.nuanst.com) extension. Route GitHub Copilot — chat, code completions, inline hints/NES, agents, and
 skills — through **your** LiteLLM proxy or local models, and keep Copilot as
 the UI. Useful when model traffic should stay on your own infrastructure,
 including after Copilot credits are exhausted.
 
 ## Install
 
-Search the Extensions view for **LiteLLM Router for GitHub Copilot**
+Search the Extensions view for **LiteLLM Proxy for GitHub Copilot**
 (publisher `nuanst-one`), or install a packaged build:
 
 ```bash
@@ -36,15 +38,15 @@ proxy, and can export a ready `litellm/config.yml`. Auth token minting still goe
 ## Setup
 
 1. Set `vscode-litellm.proxyBaseUrl` (default `http://localhost:4000`) and start your LiteLLM proxy.
-2. If the proxy requires an API key, run **LiteLLM Router: Store API Key Securely** and turn on `vscode-litellm.forwarder.enabled`. Copilot sends its own token; the forwarder replaces it with yours.
+2. If the proxy requires an API key, run **LiteLLM Proxy: Store API Key Securely** and turn on `vscode-litellm.forwarder.enabled`. Copilot sends its own token; the forwarder replaces it with yours.
 3. The status bar shows **✓ LiteLLM** when the proxy is reachable, and **✗** when it is not. Click it for every command.
 4. Commands:
-   - **LiteLLM Router: Configure Model Map** — map Copilot model names → LiteLLM deployments
-   - **LiteLLM Router: Test Connection**
-   - **LiteLLM Router: Recent Requests** — last 200 forwarded requests with status, latency, time-to-first-byte, retries and errors (no more log-scrolling to find the failed call)
-   - **LiteLLM Router: Store API Key Securely** / **Clear Stored API Key** — keep the proxy key in VS Code SecretStorage instead of settings.json (SecretStorage takes priority while set)
-   - **LiteLLM Router: Export LiteLLM config.yml** — generates a config using the Copilot model names as `model_name`
-   - **LiteLLM Router: Toggle Routing** — on: override keys written; off: those keys cleared and the real GitHub endpoints restored
+   - **LiteLLM Proxy: Configure Model Map** — map Copilot model names → LiteLLM deployments
+   - **LiteLLM Proxy: Test Connection**
+   - **LiteLLM Proxy: Recent Requests** — last 200 forwarded requests with status, latency, time-to-first-byte, retries and errors (no more log-scrolling to find the failed call)
+   - **LiteLLM Proxy: Store API Key Securely** / **Clear Stored API Key** — keep the proxy key in VS Code SecretStorage instead of settings.json (SecretStorage takes priority while set)
+   - **LiteLLM Proxy: Export LiteLLM config.yml** — generates a config using the Copilot model names as `model_name`
+   - **LiteLLM Proxy: Toggle Routing** — on: override keys written; off: those keys cleared and the real GitHub endpoints restored
 
 ## Settings
 
@@ -88,7 +90,7 @@ what your proxy implements.
 - **Rate-limit/429 noise from Copilot**: the proxy may omit
   `x-ratelimit-*` / `x-github-request-id` headers; Copilot tolerates their
   absence.
-- **"which Copilot call just failed?"**: *LiteLLM Router: Recent Requests*
+- **"which Copilot call just failed?"**: *LiteLLM Proxy: Recent Requests*
   lists the last 200 forwarded requests with status, total latency, time to
   first byte, and whether a fallback/transport retry happened; pick one for
   the full detail. The forwarder also transparently retries **once** on
@@ -156,3 +158,5 @@ docs/spike.md           checklist for verifying override keys after a Copilot up
 ## License
 
 [MIT](LICENSE) © 2026 Nuanst One GmbH.
+
+GitHub Copilot is a trademark of GitHub, Inc. LiteLLM is a trademark of BerriAI. This extension is not affiliated with or endorsed by either organization.

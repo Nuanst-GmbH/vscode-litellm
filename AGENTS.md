@@ -8,11 +8,11 @@ own LiteLLM proxy, with a fallback model for unavailable deployments.
 
 The extension ships its own troubleshooting tooling:
 
-- **Doctor** — `src/doctor.ts`, command "LiteLLM Router: Troubleshoot (doctor)"
+- **Doctor** — `src/doctor.ts`, command "LiteLLM Proxy: Troubleshoot (doctor)"
   (report goes to the "LiteLLM Doctor" output channel).
 - **Status-bar menu** — clicking the LiteLLM status item runs
   `vscode-litellm.statusBarMenu` (QuickPick of all actions, in `extension.ts`).
-- **Log level** — `vscode-litellm.logLevel` + "LiteLLM Router: Set Log Level".
+- **Log level** — `vscode-litellm.logLevel` + "LiteLLM Proxy: Set Log Level".
 - **README** settings table and Troubleshooting section.
 
 **Whenever you change functionality, update all of these in the same change:**
@@ -72,13 +72,13 @@ bump, the check can't detect that a window is running old code. Keep that
     `src/forwarder.ts`.
 - **Request records:** every forwarded request lands in a 200-entry ring
   buffer, finalized exactly once on the client response's `close` (so latency
-  spans any transparent retries), surfaced by the "LiteLLM Router: Recent
+  spans any transparent retries), surfaced by the "LiteLLM Proxy: Recent
   Requests" command. The buffer resets when the forwarder restarts (options
   change → new `Forwarder` instance).
 - The `res.once('close', …)` handler in the server callback is the **single
   place** records are finalized — don't add a second push site.
 - **API key precedence:** SecretStorage key `forwarderApiKey` (set via
-  "LiteLLM Router: Store API Key Securely", cleared via "LiteLLM Router: Clear
+  "LiteLLM Proxy: Store API Key Securely", cleared via "LiteLLM Proxy: Clear
   Stored API Key" — empty input in the store command also clears) >
   `forwarder.apiKey` > `deployment.apiKey`. The doctor reports which source is
   active.

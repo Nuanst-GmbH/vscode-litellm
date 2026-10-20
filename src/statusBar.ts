@@ -22,7 +22,7 @@ export class StatusBar {
   constructor() {
     this.item = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 50);
     this.item.command = 'vscode-litellm.statusBarMenu';
-    this.item.name = 'LiteLLM Router';
+    this.item.name = 'LiteLLM Proxy';
     this.renderIdle();
   }
 
@@ -84,24 +84,24 @@ export class StatusBar {
     if (status.reachable) {
       this.item.text = '$(pass-filled) LiteLLM';
       this.item.backgroundColor = undefined;
-      this.item.tooltip = `LiteLLM Router — ${base}\n${status.message}\nClick for the LiteLLM Router menu (troubleshoot, reload, …).`;
+      this.item.tooltip = `LiteLLM Proxy — ${base}\n${status.message}\nClick for the LiteLLM Proxy menu (troubleshoot, reload, …).`;
     } else {
       this.item.text = '$(error) LiteLLM';
       this.item.backgroundColor = new vscode.ThemeColor('statusBarItem.errorBackground');
-      this.item.tooltip = `LiteLLM Router — ${base}\n${status.message}\nClick for the LiteLLM Router menu (troubleshoot, reload, …).`;
+      this.item.tooltip = `LiteLLM Proxy — ${base}\n${status.message}\nClick for the LiteLLM Proxy menu (troubleshoot, reload, …).`;
     }
     this.item.show();
   }
 
   private renderIdle(): void {
     this.item.text = '$(server-process) LiteLLM';
-    this.item.tooltip = 'LiteLLM Router';
+    this.item.tooltip = 'LiteLLM Proxy';
   }
 
   private renderDisabled(): void {
     this.item.text = '$(circle-slash) LiteLLM';
     this.item.backgroundColor = undefined;
-    this.item.tooltip = 'LiteLLM Router is disabled — Copilot uses the real GitHub endpoints.\nRun "LiteLLM Router: Toggle Routing" to re-enable.';
+    this.item.tooltip = 'LiteLLM Proxy is disabled — Copilot uses the real GitHub endpoints.\nRun "LiteLLM Proxy: Toggle Routing" to re-enable.';
     this.item.show();
   }
 }

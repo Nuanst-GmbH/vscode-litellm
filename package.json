@@ -1,7 +1,7 @@
 {
   "name": "vscode-litellm",
-  "displayName": "LiteLLM Router for GitHub Copilot",
-  "description": "Route VS Code Copilot (chat, code completions, inline hints, agents) through your own LiteLLM proxy or local models.",
+  "displayName": "LiteLLM Proxy for GitHub Copilot",
+  "description": "Route GitHub Copilot chat, completions, inline suggestions, and agents through your LiteLLM proxy.",
   "version": "0.2.0",
   "publisher": "nuanst-one",
   "license": "MIT",
@@ -15,19 +15,27 @@
   },
   "icon": "icon.png",
   "galleryBanner": {
-    "color": "#1e293b",
+    "color": "#47704c",
     "theme": "dark"
   },
   "pricing": "Free",
   "qna": "https://github.com/nuanst-one/vscode-litellm/issues",
   "keywords": [
     "litellm",
+    "github copilot",
     "copilot",
-    "github-copilot",
     "proxy",
+    "completions",
+    "inline suggestions",
+    "ollama",
     "openai",
-    "local-llm",
-    "router"
+    "local llm",
+    "self-hosted",
+    "openrouter",
+    "agents",
+    "gateway",
+    "azure openai",
+    "vllm"
   ],
   "engines": {
     "vscode": "^1.110.0"
@@ -44,50 +52,50 @@
     "commands": [
       {
         "command": "vscode-litellm.configure",
-        "title": "LiteLLM Router: Configure Model Map"
+        "title": "LiteLLM Proxy: Configure Model Map"
       },
       {
         "command": "vscode-litellm.testConnection",
-        "title": "LiteLLM Router: Test Connection"
+        "title": "LiteLLM Proxy: Test Connection"
       },
       {
         "command": "vscode-litellm.exportConfig",
-        "title": "LiteLLM Router: Export LiteLLM config.yml"
+        "title": "LiteLLM Proxy: Export LiteLLM config.yml"
       },
       {
         "command": "vscode-litellm.toggle",
-        "title": "LiteLLM Router: Toggle Routing"
+        "title": "LiteLLM Proxy: Toggle Routing"
       },
       {
         "command": "vscode-litellm.doctor",
-        "title": "LiteLLM Router: Troubleshoot (doctor)",
+        "title": "LiteLLM Proxy: Troubleshoot (doctor)",
         "icon": "$(search)"
       },
       {
         "command": "vscode-litellm.reload",
-        "title": "LiteLLM Router: Reload (restart this window)",
+        "title": "LiteLLM Proxy: Reload (restart this window)",
         "icon": "$(reload)"
       },
       {
         "command": "vscode-litellm.setLogLevel",
-        "title": "LiteLLM Router: Set Log Level",
+        "title": "LiteLLM Proxy: Set Log Level",
         "icon": "$(settings-gear)"
       },
       {
         "command": "vscode-litellm.statusBarMenu",
-        "title": "LiteLLM Router: Menu"
+        "title": "LiteLLM Proxy: Menu"
       },
       {
         "command": "vscode-litellm.recentRequests",
-        "title": "LiteLLM Router: Recent Requests"
+        "title": "LiteLLM Proxy: Recent Requests"
       },
       {
         "command": "vscode-litellm.storeApiKey",
-        "title": "LiteLLM Router: Store API Key Securely"
+        "title": "LiteLLM Proxy: Store API Key Securely"
       },
       {
         "command": "vscode-litellm.clearApiKey",
-        "title": "LiteLLM Router: Clear Stored API Key"
+        "title": "LiteLLM Proxy: Clear Stored API Key"
       }
     ],
     "menus": {
@@ -104,7 +112,7 @@
       ]
     },
     "configuration": {
-      "title": "LiteLLM Router for GitHub Copilot",
+      "title": "LiteLLM Proxy for GitHub Copilot",
       "properties": {
         "vscode-litellm.enabled": {
           "type": "boolean",
@@ -128,7 +136,7 @@
             "gpt-4o-copilot": "gpt-4o",
             "claude-3-7-sonnet-latest": "claude-3-7-sonnet-latest"
           },
-          "markdownDescription": "Maps Copilot model names (what the picker sends) to LiteLLM model names. Edit with the *LiteLLM Router: Configure Model Map* command. Names observed during the spike should be added here."
+          "markdownDescription": "Maps Copilot model names (what the picker sends) to LiteLLM model names. Edit with the *LiteLLM Proxy: Configure Model Map* command. Names observed during the spike should be added here."
         },
         "vscode-litellm.deployment.apiBase": {
           "type": "string",
@@ -153,7 +161,7 @@
         "vscode-litellm.forwarder.apiKey": {
           "type": "string",
           "default": "",
-          "markdownDescription": "API key sent to the proxy as `Authorization: Bearer <key>`. Falls back to `#vscode-litellm.deployment.apiKey#` when empty. Stored in plain text — prefer **LiteLLM Router: Store API Key Securely** (SecretStorage), which takes priority while set."
+          "markdownDescription": "API key sent to the proxy as `Authorization: Bearer <key>`. Falls back to `#vscode-litellm.deployment.apiKey#` when empty. Stored in plain text — prefer **LiteLLM Proxy: Store API Key Securely** (SecretStorage), which takes priority while set."
         },
         "vscode-litellm.forwarder.requestTimeoutMs": {
           "type": "integer",
