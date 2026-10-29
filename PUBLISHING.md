@@ -43,8 +43,31 @@ so a version bump is what makes a stale window detectable.
 
 ### Publish
 
-Global Azure DevOps personal access tokens are retired on **1 December 2026**.
-Until then, a PAT with the Marketplace **Manage** scope still works:
+Publishing runs from GitHub Actions with Marketplace Trusted Publishing
+(OIDC). No PAT is stored in the repository.
+Steps: <https://code.visualstudio.com/api/working-with-extensions/publishing-extension#publish-with-github-actions-and-trusted-publishing>.
+
+One-time, on the publisher (`nuanst-one`):
+
+1. Open <https://marketplace.visualstudio.com/manage/publishers>, select the publisher, then **Trusted Publishing**.
+2. Create a policy:
+   - **Policy name**: `Release workflow`
+   - **Repository owner**: `Nuanst-GmbH` (the GitHub login, exactly)
+   - **Repository**: `vscode-litellm`
+   - **Workflow**: `publish.yml`
+   - **Environment**: leave empty (the workflow does not use a GitHub environment)
+
+Each release: bump `version`, update `CHANGELOG.md`, commit, push, then publish
+a GitHub Release whose tag is `v` plus that version (for example `v0.2.0`).
+`.github/workflows/publish.yml` checks out that tag, runs `npm test`, and runs
+`npx @vscode/vsce publish --oidc`. The workflow needs `id-token: write`. The
+Marketplace credential lasts 15 minutes and each GitHub OIDC token can be
+exchanged once.
+
+`@vscode/vsce` must stay on 4.1 or newer; `--oidc` is not in 3.x.
+
+A local PAT publish still works until global Azure DevOps PATs are retired on
+**1 December 2026**:
 
 ```bash
 # https://marketplace.visualstudio.com/manage — User settings → Personal access tokens
@@ -54,14 +77,12 @@ npm run publish
 
 Or upload the `.vsix` by hand on the publisher management page.
 
-After 1 December 2026, publish with Microsoft Entra ID (`vsce publish --azure-credential`).
-Microsoft's steps: <https://code.visualstudio.com/api/working-with-extensions/publishing-extension>.
-
 ## Checklist
 
 - [ ] `publisher` matches the marketplace publisher ID
 - [ ] `repository` is the real public GitHub URL
 - [ ] `version` bumped and `CHANGELOG.md` updated
+- [ ] GitHub Release tag is `v` plus that version (this is what publishes)
 - [ ] `LICENSE`, `README.md`, `CHANGELOG.md`, and `icon.png` (128×128 PNG) present
 - [ ] README has no internal hostnames, paths, or keys (`docs-local/` stays untracked)
 - [ ] `npx vsce ls` shows `dist/extension.js`, not `src/`, `test/`, or `node_modules/`

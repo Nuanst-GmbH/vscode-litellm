@@ -107,7 +107,10 @@ The workspace source is **never** what VS Code runs. After any `src/` change:
    exists to catch).
 
 CI: `.github/workflows/ci.yml` runs `check`, `compile`, and `test` — keep all
-three green.
+three green. `.github/workflows/publish.yml` publishes to the Marketplace with
+`vsce publish --oidc` when a GitHub Release is published. The Marketplace
+Trusted Publishing policy must name that workflow file (`publish.yml`) and
+leave Environment empty.
 
 ## Testing
 
