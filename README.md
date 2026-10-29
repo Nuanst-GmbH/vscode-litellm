@@ -10,10 +10,10 @@ including after Copilot credits are exhausted.
 ## Install
 
 Search the Extensions view for **LiteLLM Proxy for GitHub Copilot**
-(publisher `nuanst-one`), or install a packaged build:
+(publisher `Nuanst-GmbH`), or install a packaged build:
 
 ```bash
-code --install-extension vscode-litellm-0.2.0.vsix
+code --install-extension vscode-litellm-0.2.1.vsix
 ```
 
 Reload the window after installing. You need VS Code 1.110 or newer, GitHub

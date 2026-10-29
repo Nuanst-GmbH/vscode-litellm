@@ -4,6 +4,13 @@ All notable changes to **LiteLLM Proxy for GitHub Copilot** are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.1] - 2026-10-29
+
+### Changed
+
+- Publisher ID is `Nuanst-GmbH`.
+- Marketplace releases publish from GitHub Actions with Trusted Publishing.
+
 ## [0.2.0] - 2026-10-20
 
 First public release.
@@ -16,4 +23,5 @@ First public release.
 - Export of a LiteLLM `config.yml` from the model map.
 - Marketplace icon in the Nuanst green and orange.
 
-[0.2.0]: https://github.com/nuanst-one/vscode-litellm/releases/tag/v0.2.0
+[0.2.1]: https://github.com/Nuanst-GmbH/vscode-litellm/releases/tag/v0.2.1
+[0.2.0]: https://github.com/Nuanst-GmbH/vscode-litellm/releases/tag/v0.2.0

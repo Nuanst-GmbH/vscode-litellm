@@ -2,7 +2,7 @@
   "name": "vscode-litellm",
   "displayName": "LiteLLM Proxy for GitHub Copilot",
   "description": "Route GitHub Copilot chat, completions, inline suggestions, and agents through your LiteLLM proxy.",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "publisher": "Nuanst-GmbH",
   "license": "MIT",
   "repository": {
