@@ -1,0 +1,37 @@
+name: Bug report
+description: Routing, the forwarder, or a LiteLLM Proxy command did not work as expected.
+title: ""
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Prefer **LiteLLM Proxy: Report Issue** in VS Code. It fills in Diagnostics for you.
+
+        The issue is public once you submit it. Delete anything you do not want published. The exact list of what that command gathers is in [PRIVACY.md](https://github.com/Nuanst-GmbH/vscode-litellm/blob/main/PRIVACY.md).
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What you did, what you expected, and what you saw instead.
+      placeholder: The status bar stays red after I enable the forwarder and store an API key.
+    validations:
+      required: true
+
+  - type: textarea
+    id: diagnostics
+    attributes:
+      label: Diagnostics
+      description: Filled by LiteLLM Proxy — Report Issue. Versions, OS, routing settings, proxy URL with any password removed, model map, whether an API key is set (never the key), and up to 10 recent request summaries. No prompts or file contents.
+      render: text
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: reviewed
+    attributes:
+      label: Before you submit
+      options:
+        - label: I reviewed the diagnostics and removed anything I do not want on a public issue.
+          required: true

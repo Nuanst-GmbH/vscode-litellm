@@ -7,6 +7,8 @@ import { StatusBar } from './statusBar';
 import { Forwarder, ForwarderOptions } from './forwarder';
 import { RequestRecord } from './policies';
 import { runDoctor } from './doctor';
+import { detectCopilotBuild } from './copilotVersions';
+import { BUG_REPORT_URL, buildDiagnostics, reportIssueUrl } from './issueReport';
 import { warnOnce } from './notify';
 import { log, LogLevel } from './logger';
 
@@ -323,6 +325,70 @@ export function activate(context: vscode.ExtensionContext): void {
       }
     }),
 
+    // Opens the GitHub bug form with a diagnostics draft. The draft is not
+    // uploaded until the user submits it. See PRIVACY.md for the field list.
+    vscode.commands.registerCommand('vscode-litellm.reportIssue', async () => {
+      const cfg = vscode.workspace.getConfiguration(CFG);
+      const settingsKey = (cfg.get<string>('forwarder.apiKey', '') || cfg.get<string>('deployment.apiKey', '')).trim();
+      const fromSecret = !!(await secretKey(context));
+      const { vscodeVersion, chatVersion } = detectCopilotBuild();
+      const manifestBugs = context.extension?.packageJSON?.bugs;
+      const templateUrl = (typeof manifestBugs === 'object' && manifestBugs && typeof manifestBugs.url === 'string' && manifestBugs.url.startsWith('https://'))
+        ? manifestBugs.url
+        : BUG_REPORT_URL;
+      const diagnostics = buildDiagnostics({
+        extensionVersion: __LITELLM_EXT_VERSION__,
+        vscodeVersion,
+        appName: vscode.env.appName,
+        uiKind: vscode.env.uiKind === vscode.UIKind.Web ? 'web' : 'desktop',
+        remoteName: vscode.env.remoteName ?? '',
+        platform: process.platform,
+        arch: process.arch,
+        copilotChatVersion: chatVersion ?? 'unknown',
+        enabled: cfg.get<boolean>('enabled', true),
+        proxyBaseUrl: cfg.get<string>('proxyBaseUrl', 'http://localhost:4000') ?? '',
+        forwarderEnabled: cfg.get<boolean>('forwarder.enabled', false),
+        forwarderPort: cfg.get<number>('forwarder.port', 4141),
+        forwarderRunning: forwarder?.running() ?? false,
+        apiKeySource: fromSecret ? 'secret' : settingsKey ? 'settings' : 'none',
+        fallbackModel: cfg.get<string>('forwarder.fallbackModel', '') ?? '',
+        defaultDeployment: cfg.get<string>('defaultDeployment', '') ?? '',
+        deploymentApiBase: cfg.get<string>('deployment.apiBase', '') ?? '',
+        modelMap: readModelMap(),
+        surfaces: {
+          chat: cfg.get<boolean>('surfaces.chat', true),
+          agents: cfg.get<boolean>('surfaces.agents', true),
+          completions: cfg.get<boolean>('surfaces.completions', true),
+          nes: cfg.get<boolean>('surfaces.nes', true),
+        },
+        requestTimeoutMs: cfg.get<number>('forwarder.requestTimeoutMs', 30000),
+        statusPollIntervalMs: cfg.get<number>('statusPollIntervalMs', 30000),
+        logLevel: cfg.get<string>('logLevel', 'trace') ?? 'trace',
+        recent: forwarder?.recentRequests() ?? [],
+      });
+      const choice = await vscode.window.showInformationMessage(
+        'Open a public GitHub issue? The draft includes versions, OS, Copilot Chat version, routing settings, your proxy URL with any password removed, the model map, whether an API key is configured (never the key), and up to 10 recent request summaries (method, path, status, timing — not prompts). You can edit the draft before submitting. Nothing is uploaded until you create the issue.',
+        { modal: true },
+        'Open issue',
+        'Copy diagnostics',
+      );
+      if (!choice) return;
+      if (choice === 'Copy diagnostics') {
+        await vscode.env.clipboard.writeText(diagnostics);
+        extLog.info('issue diagnostics copied');
+        void vscode.window.showInformationMessage('LiteLLM Proxy: diagnostics copied');
+        return;
+      }
+      extLog.info('opening GitHub issue draft');
+      const opened = await vscode.env.openExternal(vscode.Uri.parse(reportIssueUrl(templateUrl, diagnostics)));
+      if (!opened) {
+        await vscode.env.clipboard.writeText(diagnostics);
+        void vscode.window.showErrorMessage(
+          'LiteLLM Proxy: could not open the browser. Diagnostics were copied — paste them into a GitHub issue.',
+        );
+      }
+    }),
+
     // Restart this window's extension host — the reliable way to make a
     // freshly-installed build (and any setting/override change) take effect in
     // just THIS window, without touching the other open windows.
@@ -446,6 +512,7 @@ export function activate(context: vscode.ExtensionContext): void {
       const enabled = cfg.get<boolean>('enabled', true);
       const items = [
         { label: '$(search) Troubleshoot (doctor)', description: 'check settings, port, build version, reachability', cmd: 'vscode-litellm.doctor' },
+        { label: '$(bug) Report issue', description: 'GitHub draft with versions and settings — no keys or prompts', cmd: 'vscode-litellm.reportIssue' },
         { label: '$(pass-filled) Test connection', description: 'ping the endpoint now', cmd: 'vscode-litellm.testConnection' },
         { label: '$(list-ordered) Recent requests', description: 'last 200 forwarded requests with latency and errors', cmd: 'vscode-litellm.recentRequests' },
         { label: '$(key) Store API key securely', description: 'SecretStorage (priority over settings.json)', cmd: 'vscode-litellm.storeApiKey' },

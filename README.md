@@ -13,7 +13,7 @@ Search the Extensions view for **LiteLLM Proxy for GitHub Copilot**
 (publisher `Nuanst-GmbH`), or install a packaged build:
 
 ```bash
-code --install-extension vscode-litellm-0.2.1.vsix
+code --install-extension vscode-litellm-0.2.2.vsix
 ```
 
 Reload the window after installing. You need VS Code 1.110 or newer, GitHub
@@ -47,6 +47,7 @@ proxy, and can export a ready `litellm/config.yml`. Auth token minting still goe
    - **LiteLLM Proxy: Store API Key Securely** / **Clear Stored API Key** — keep the proxy key in VS Code SecretStorage instead of settings.json (SecretStorage takes priority while set)
    - **LiteLLM Proxy: Export LiteLLM config.yml** — generates a config using the Copilot model names as `model_name`
    - **LiteLLM Proxy: Toggle Routing** — on: override keys written; off: those keys cleared and the real GitHub endpoints restored
+   - **LiteLLM Proxy: Report Issue** — opens a GitHub bug report with a diagnostics draft. You can edit it before submitting. What the draft contains is listed under [Privacy](#privacy)
 
 ## Settings
 
@@ -118,6 +119,7 @@ what your proxy implements.
   through the forwarder and reports the upstream status, and it probes that a
   WebSocket upgrade is refused cleanly (501) rather than hanging — a silent
   WS hang looks exactly like "chat isn't routed".
+- **Filing a bug**: run **LiteLLM Proxy: Report Issue** (or click the status-bar item and choose **Report issue**). It opens the [bug-report form](https://github.com/Nuanst-GmbH/vscode-litellm/issues/new?template=bug_report.yml) with versions, routing settings, and recent request summaries filled in. Review the draft before you submit. Details are in [Privacy](#privacy).
 - **"message filter" line in the log** (`dropped N empty system message(s),
   nulled M empty assistant content(s)`): the forwarder normalized Copilot's
   blank system prompt / empty tool-call assistant content before forwarding.
@@ -141,6 +143,7 @@ checklist for a new Copilot build is [docs/spike.md](docs/spike.md).
 
 ```
 src/extension.ts        activation, commands, config validation + wiring
+src/issueReport.ts      Report Issue draft (redaction, no vscode)
 src/copilotSettings.ts  writes/clears the hidden override keys (API + settings.json fallback)
 src/copilotVersions.ts  verified VS Code / Copilot Chat builds for the override keys (doctor check)
 src/forwarder.ts        local auth-rewriting proxy: advertises modelMap names, fallback-model retry, transport retry (429/5xx/connect errors), first-byte timeout, empty-content normalization, recent-request ring buffer
@@ -154,6 +157,31 @@ test/                   standalone smoke tests (npm test, no framework)
 spike/config.example.yml  minimal LiteLLM config for the spike
 docs/spike.md           checklist for verifying override keys after a Copilot update
 ```
+
+## Privacy
+
+The extension does not send telemetry. Prompts and API keys stay between this
+window and the proxy URL you configured. Copilot token requests still go to
+GitHub, because this extension does not intercept them.
+
+**LiteLLM Proxy: Report Issue** does not upload anything by itself. It opens a
+public GitHub issue form with a diagnostics draft filled in. GitHub receives
+that text only if you submit the issue, and you can edit or delete it first.
+
+The draft includes:
+
+- Extension version, VS Code version and product name, desktop or web, and the remote window type if you are in one (`wsl`, `ssh-remote`, … — the kind of remote, not a hostname)
+- OS platform and CPU architecture. Not your username, home directory, or machine hostname
+- GitHub Copilot Chat version, or `builtin` when Copilot ships inside VS Code
+- Routing on/off, surface toggles, forwarder on/off, port, whether it is listening, timeout, poll interval, and log level
+- Fallback model, default deployment, and the model map (up to 50 entries)
+- Proxy base URL and deployment API base, with any username, password, or fragment removed
+- Whether an API key is set, and where (SecretStorage, settings.json, or not set). Never the key
+- Up to 10 newest forwarded requests: time, method, path, model id, status, latency, time to first byte, outcome, retry flags, and a short error string. Query strings on those paths are replaced with `[query redacted]`
+
+The draft does not include API keys, bearer tokens, prompt or completion text, file contents, or workspace paths. Token-like strings (`Bearer …`, `sk-…`, `api_key=`) are replaced with `[redacted]`. The doctor does not run as part of this command, so no test chat is sent.
+
+The same statement is in [PRIVACY.md](PRIVACY.md). Questions and bug reports: [SUPPORT.md](SUPPORT.md).
 
 ## License
 

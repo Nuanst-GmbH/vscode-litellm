@@ -2,16 +2,16 @@
   "name": "vscode-litellm",
   "displayName": "LiteLLM Proxy for GitHub Copilot",
   "description": "Route GitHub Copilot chat, completions, inline suggestions, and agents through your LiteLLM proxy.",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "publisher": "Nuanst-GmbH",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/nuanst-one/vscode-litellm.git"
+    "url": "https://github.com/Nuanst-GmbH/vscode-litellm.git"
   },
-  "homepage": "https://github.com/nuanst-one/vscode-litellm#readme",
+  "homepage": "https://github.com/Nuanst-GmbH/vscode-litellm#readme",
   "bugs": {
-    "url": "https://github.com/nuanst-one/vscode-litellm/issues"
+    "url": "https://github.com/Nuanst-GmbH/vscode-litellm/issues/new?template=bug_report.yml"
   },
   "icon": "icon.png",
   "galleryBanner": {
@@ -19,7 +19,7 @@
     "theme": "dark"
   },
   "pricing": "Free",
-  "qna": "https://github.com/nuanst-one/vscode-litellm/issues",
+  "qna": "https://github.com/Nuanst-GmbH/vscode-litellm/blob/main/SUPPORT.md",
   "keywords": [
     "litellm",
     "github copilot",
@@ -70,6 +70,11 @@
         "command": "vscode-litellm.doctor",
         "title": "LiteLLM Proxy: Troubleshoot (doctor)",
         "icon": "$(search)"
+      },
+      {
+        "command": "vscode-litellm.reportIssue",
+        "title": "LiteLLM Proxy: Report Issue",
+        "icon": "$(bug)"
       },
       {
         "command": "vscode-litellm.reload",

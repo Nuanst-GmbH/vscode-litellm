@@ -1,5 +1,5 @@
 # The VSIX ships dist/extension.js plus the manifest, README, LICENSE,
-# CHANGELOG, SUPPORT, and icon.png. Everything else stays in the git repo.
+# CHANGELOG, SUPPORT, PRIVACY, and icon.png. Everything else stays in the git repo.
 .vscode/**
 .git/**
 .gitignore

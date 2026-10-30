@@ -139,11 +139,11 @@ Contributed in `package.json` `contributes.commands`, implemented in
 - `vscode-litellm.recentRequests` — Recent Requests
 - `vscode-litellm.storeApiKey` — Store API Key Securely
 - `vscode-litellm.clearApiKey` — Clear Stored API Key
+- `vscode-litellm.reportIssue` — Report Issue (GitHub draft; field list in `PRIVACY.md`)
 - `vscode-litellm.statusBarMenu` — Menu (hidden from the command palette)
 
-All user actions — including the three newest (Recent Requests, Store API Key
-Securely, Clear Stored API Key) — are also in the status-bar menu QuickPick
-(`vscode-litellm.statusBarMenu`, opened by clicking the status item).
+All user actions — including Report Issue — are also in the status-bar menu
+QuickPick (`vscode-litellm.statusBarMenu`, opened by clicking the status item).
 
 ## Gotchas (learned the hard way)
 

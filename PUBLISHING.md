@@ -5,15 +5,16 @@ and is excluded from the VSIX.
 
 ## One-time: GitHub
 
-1. Create an empty public repository `nuanst-one/vscode-litellm` (no README, no license — this repo already has both).
-2. From this directory:
+1. The public repository is `Nuanst-GmbH/vscode-litellm`.
+2. From this directory, if `origin` is missing:
 
 ```bash
-git remote add origin https://github.com/nuanst-one/vscode-litellm.git
+git remote add origin https://github.com/Nuanst-GmbH/vscode-litellm.git
 git push -u origin main
 ```
 
-`package.json` `repository`, `homepage`, `bugs`, and `qna` already point at that URL.
+`package.json` `repository`, `homepage`, `bugs` (the bug-report form), and `qna`
+(`SUPPORT.md`) already point at that repository.
 If the GitHub owner differs, change those four fields before packaging. `vsce` rewrites
 relative README links against `repository` and assumes the `main` branch.
 
